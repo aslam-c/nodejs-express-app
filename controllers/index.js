@@ -1,15 +1,20 @@
 const {validateRequest}= require("../requests/generateToken")
+const { makeResponse } = require("../utils/response")
 module.exports = {
     generateToken : (req, res, next) => {
+        let httpStatusCode = 422
+        let response = {}
         try {
             validateRequest(req.body)
-            console.log("REQ BODY IS " + JSON.stringify(req.body))
             const token = "890290CV89"
-            res.status(200).json({ msg: 'token generated successfully', token })
+
+            httpStatusCode=200
+            response = makeResponse("Token generated successfully", { token }, {},httpStatusCode)
+            res.status(httpStatusCode).json(response)
         }
         catch (error) {
-            console.log("ERROR IS " + JSON.stringify(error))
-            res.status(403).json({ msg: 'error generating token', error, status: 403 })
+            response = makeResponse("Token cant be generated", {}, error,httpStatusCode,false)
+            res.status(httpStatusCode).json(response)
         }
     }
 }
