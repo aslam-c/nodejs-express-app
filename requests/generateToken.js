@@ -1,4 +1,6 @@
-const Joi= require('joi')
+const Joi = require('joi')
+const { parseMessages } = require("../requests/parseErrorMessages")
+
 module.exports = {
     validateRequest: (reqBody) => {
         const schema = Joi.object({
@@ -8,16 +10,8 @@ module.exports = {
         })
         const validationResult=schema.validate(reqBody,{abortEarly:false})    
         if (validationResult.error) {
-            console.log("VALIDATION ERRORS ARE "+validationResult.error)    
-            const errorDetails= validationResult.error.details
-            let validationMessages=[]
-            for (const detail of errorDetails) {
-                const fieldName = detail?.context?.label                
-                let message = detail?.message?.replaceAll(/"/g,'')
-                validationMessages.push([{ [fieldName]: message }]) 
-            }
-            throw validationMessages
-
+            const messages = parseMessages(validationResult.error)
+            throw messages
         }
     }
 }
