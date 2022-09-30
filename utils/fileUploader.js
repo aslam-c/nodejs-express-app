@@ -6,30 +6,30 @@ module.exports = {
     uploadMultipleFiles: (fileName,maxFileSize,allowedExtensions,uploadPath) => {
         //
     },
-    uploadSingleFile: (fileName, maxFileSize, allowedExtensions=[],uploadPath) => {
-       
-            const storage = multer.diskStorage({
-                destination: (req, file, cb) => {
-                    cb(null, uploadPath);
+    uploadSingleFile: (uploadConf) => {
+        const storage = multer.diskStorage({
+            destination: (req, file, cb) => {
+                    cb(null, uploadConf['uploadPath']);
                 },
                 //set name for uploaded file
-                filename: (req, file, cb) => {
+            filename: (req, file, cb) => {
                     const fileNameParts = file.originalname.split('.')
                     const fileExtension = fileNameParts[fileNameParts.length - 1]
-                    cb(null, `${fileName}.${fileExtension}`)
+                    cb(null, `${uploadConf['fileName']}.${fileExtension}`)
                 }
             })
             const fileFilter = (req, file, cb) => {
                 //check file size type etc
                 const mimeType = file.mimetype
-                if (allowedExtensions.includes(mimeType)) {
+                if (uploadConf['allowedExtensions'].includes(mimeType)) {
                     cb(null, true)
                 }
-                else {
-                    cb(null,false)
+                else {  
+                    cb("File type not allowed",false);
                 }
-            }
-            return multer({ storage, fileFilter })
         }
+            let multerInstance=multer({ storage:storage, fileFilter }).single(uploadConf['fieldName'])
+            return multerInstance
+    }
     
 }
