@@ -1,6 +1,6 @@
 module.exports = {
-    handle: () => {
-        console.log("Auth event caught")
+    handle: (args) => {
+        console.log("Auth event caught "+args['message'])
         return true
     }
 }

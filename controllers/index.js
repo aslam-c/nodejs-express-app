@@ -1,7 +1,7 @@
 const {validateRequest}= require("../requests/generateToken")
 const { makeJsonResponse } = require("../utils/response")
-const {uploadSingleFile}=require("../utils/fileUploader")
-
+const { uploadSingleFile } = require("../utils/fileUploader")
+const {eventBus}=require("../utils/event")
 
 const fileUploadParams = {
     fileName: "file1",
@@ -28,10 +28,10 @@ module.exports = {
             res.status(httpStatusCode).json(response)
         }
     },
-
     uploadFile: (req, res, next) => {
         let httpStatusCode = 422
         let response = {}
+        eventBus.publish('authd')
         try {
                 uploader(req, res, (err) => {
                     if (err) {
@@ -44,8 +44,6 @@ module.exports = {
                         res.status(httpStatusCode).json(response)
                     }
                 })
-            
-
         }
         catch (error) {
             console.log("Cant upload file",JSON.stringify(error.stack));
